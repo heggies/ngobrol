@@ -1,7 +1,8 @@
 import styled from 'styled-components/macro'
 
-export const Input = styled.input`
-  border: 2px solid ${p => p.theme.border};
+export const Input = styled.input<{ isValid?: boolean }>`
+  border: 2px solid
+    ${p => (p.isValid === undefined || p.isValid ? p.theme.border : 'red')};
   border-radius: 4px;
   color: ${p => p.theme.text};
   display: block;
