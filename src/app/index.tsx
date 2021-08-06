@@ -16,6 +16,7 @@ import { GlobalStyle } from '../styles/global-styles'
 import { HomePage } from './pages/HomePage/Loadable'
 import { Home } from './pages/Home/Loadable'
 import { NotFoundPage } from './pages/NotFoundPage/Loadable'
+import { ChatRoom } from './pages/ChatRoom/Loadable'
 
 export function App() {
   const { i18n } = useTranslation()
@@ -32,6 +33,11 @@ export function App() {
       <Switch>
         <Route exact path={process.env.PUBLIC_URL + '/'} component={HomePage} />
         <Route exact path={process.env.PUBLIC_URL + '/home'} component={Home} />
+        <Route
+          exact
+          path={process.env.PUBLIC_URL + '/room/:id'}
+          component={ChatRoom}
+        />
 
         <Route component={NotFoundPage} />
       </Switch>
