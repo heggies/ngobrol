@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid'
+
 export function RandomString(length: number) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
   const charsLength = chars.length
@@ -63,4 +65,8 @@ export function RandomUsername() {
       animals[selectedAnimal].slice(1)) +
     Math.floor(Math.random() * 99)
   )
+}
+
+export function uuid() {
+  return uuidv4()
 }
