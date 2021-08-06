@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { useRef, ChangeEvent, useState } from 'react'
 import styled from 'styled-components'
 import { Helmet } from 'react-helmet-async'
 import { NavBar } from 'app/components/NavBar'
@@ -8,8 +8,52 @@ import { InputWrapper } from 'app/components/InputWrapper'
 import { Input } from 'app/components/Input'
 import { FormGroup } from 'app/components/FormGroup'
 import { FormLabel } from 'app/components/FormLabel'
+import { useHistory } from 'react-router-dom'
+import { RandomString } from 'utils/generate'
 
 export function Home() {
+  const roomID = useRef('')
+  const username = useRef('')
+  const [isValidRoomID, setIsValidRoomID] = useState(true)
+  const history = useHistory()
+
+  const onChangeRoomID = ({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
+    const { value } = currentTarget
+    if (value.trim().length === 0) {
+      roomID.current = value.trim()
+      setIsValidRoomID(true)
+      return
+    }
+
+    const isValid = /^[a-zA-Z][a-zA-Z][a-zA-Z][a-zA-Z]$/.test(value)
+    setIsValidRoomID(isValid)
+
+    roomID.current = value.trim()
+  }
+
+  const onChangeUsername = ({
+    currentTarget,
+  }: ChangeEvent<HTMLInputElement>) => {
+    const { value } = currentTarget
+    if (value.trim().length === 0) {
+      username.current = value.trim()
+      return
+    }
+
+    username.current = value.trim()
+  }
+
+  const onJoin = () => {
+    if (!isValidRoomID) {
+      alert('Invalid room id!')
+      return
+    }
+
+    if (roomID.current === '') roomID.current = RandomString(4)
+
+    history.push(`room/${roomID.current}`, { username: username.current })
+  }
+
   return (
     <>
       <Helmet>
@@ -22,17 +66,26 @@ export function Home() {
             <FormGroup>
               <FormLabel>Room ID</FormLabel>
               <InputWrapper>
-                <Input type="text" placeholder="ABCD (or any 4 letters)" />
+                <Input
+                  type="text"
+                  placeholder="ABCD (or any 4 letters)"
+                  onChange={onChangeRoomID}
+                  isValid={isValidRoomID}
+                />
               </InputWrapper>
               <BottomWrapper>
                 <UsernameWrapper>
                   <FormLabel>Username</FormLabel>
                   <InputWrapper>
-                    <Input type="text" placeholder="GargantuanAnt64" />
+                    <Input
+                      type="text"
+                      placeholder="GargantuanAnt64"
+                      onChange={onChangeUsername}
+                    />
                   </InputWrapper>
                 </UsernameWrapper>
                 <JoinWrapper>
-                  <JoinButton>JOIN</JoinButton>
+                  <JoinButton onClick={onJoin}>JOIN</JoinButton>
                 </JoinWrapper>
               </BottomWrapper>
             </FormGroup>
