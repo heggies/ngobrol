@@ -148,6 +148,10 @@ export function ChatRoom() {
               <MessageTime>7/12/11, 6:08 AM</MessageTime>
             </ChatWrapper>
           </ChatBox>
+          <MessageBox>
+            <MessageTextArea />
+            <MessageSendButton>SEND</MessageSendButton>
+          </MessageBox>
         </StyledWrapper>
       </PageWrapper>
     </>
@@ -170,9 +174,43 @@ const ChatBox = styled.div`
   padding: 10px 20px;
   border-radius: 10px;
   overflow-y: scroll;
+  margin-bottom: 0.5em;
 
   display: flex;
   flex-direction: column;
+  flex: 4;
+`
+
+const MessageBox = styled.div`
+  width: 100%;
+  height: 100%;
+  color: ${p => p.theme.text};
+
+  flex: 1;
+  display: flex;
+  align-items: center;
+`
+
+const MessageTextArea = styled.textarea`
+  width: 100%;
+  height: 100%;
+  resize: none;
+  margin-right: 1em;
+
+  flex: 5;
+`
+
+const MessageSendButton = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: ${p => p.theme.primary};
+  border-radius: 10px;
+  cursor: pointer;
+
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 const ChatWrapper = styled.div`
