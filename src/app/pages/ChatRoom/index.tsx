@@ -119,7 +119,7 @@ export function ChatRoom() {
       </PageWrapper>
     </>
   ) : (
-    <Redirect to="/home" />
+    <Redirect to="/" />
   )
 }
 

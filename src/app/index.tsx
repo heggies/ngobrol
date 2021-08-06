@@ -13,7 +13,6 @@ import { useTranslation } from 'react-i18next'
 
 import { GlobalStyle } from '../styles/global-styles'
 
-import { HomePage } from './pages/HomePage/Loadable'
 import { Home } from './pages/Home/Loadable'
 import { NotFoundPage } from './pages/NotFoundPage/Loadable'
 import { ChatRoom } from './pages/ChatRoom/Loadable'
@@ -31,8 +30,7 @@ export function App() {
       </Helmet>
 
       <Switch>
-        <Route exact path={process.env.PUBLIC_URL + '/'} component={HomePage} />
-        <Route exact path={process.env.PUBLIC_URL + '/home'} component={Home} />
+        <Route exact path={process.env.PUBLIC_URL + '/'} component={Home} />
         <Route
           exact
           path={process.env.PUBLIC_URL + '/room/:id'}
