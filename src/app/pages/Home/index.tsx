@@ -9,11 +9,12 @@ import { Input } from 'app/components/Input'
 import { FormGroup } from 'app/components/FormGroup'
 import { FormLabel } from 'app/components/FormLabel'
 import { useHistory } from 'react-router-dom'
-import { RandomString } from 'utils/generate'
+import { RandomString, RandomUsername } from 'utils/generate'
 
 export function Home() {
   const roomID = useRef('')
-  const username = useRef('')
+  const defaultUsername = RandomUsername()
+  const username = useRef(defaultUsername)
   const [isValidRoomID, setIsValidRoomID] = useState(true)
   const history = useHistory()
 
@@ -36,7 +37,7 @@ export function Home() {
   }: ChangeEvent<HTMLInputElement>) => {
     const { value } = currentTarget
     if (value.trim().length === 0) {
-      username.current = value.trim()
+      username.current = defaultUsername
       return
     }
 
@@ -50,6 +51,7 @@ export function Home() {
     }
 
     if (roomID.current === '') roomID.current = RandomString(4)
+    if (username.current === '') username.current = defaultUsername
 
     history.push(`room/${roomID.current}`, { username: username.current })
   }
@@ -79,7 +81,7 @@ export function Home() {
                   <InputWrapper>
                     <Input
                       type="text"
-                      placeholder="GargantuanAnt64"
+                      placeholder={defaultUsername}
                       onChange={onChangeUsername}
                     />
                   </InputWrapper>

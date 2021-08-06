@@ -1,17 +1,20 @@
-import * as React from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { Helmet } from 'react-helmet-async'
-import { useParams } from 'react-router-dom'
+import { Redirect, useLocation, useParams } from 'react-router-dom'
 import { NavBar } from 'app/components/NavBar'
 import { PageWrapper } from 'app/components/PageWrapper'
 
 export function ChatRoom() {
   const { id } = useParams<{ id: string }>()
+  const locationState = useLocation<{ username: string }>().state
 
-  return (
+  return !(locationState === undefined || locationState.username === '') ? (
     <>
       <Helmet>
-        <title>{id}</title>
+        <title>
+          {locationState.username}@{id}
+        </title>
       </Helmet>
       <NavBar />
       <PageWrapper>
@@ -155,6 +158,8 @@ export function ChatRoom() {
         </StyledWrapper>
       </PageWrapper>
     </>
+  ) : (
+    <Redirect to="/home" />
   )
 }
 
