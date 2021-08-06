@@ -13,8 +13,8 @@ import { RandomString, RandomUsername } from 'utils/generate'
 
 export function Home() {
   const roomID = useRef('')
-  const defaultUsername = RandomUsername()
-  const username = useRef(defaultUsername)
+  const defaultUsername = useRef(RandomUsername())
+  const username = useRef(defaultUsername.current)
   const [isValidRoomID, setIsValidRoomID] = useState(true)
   const history = useHistory()
 
@@ -37,7 +37,7 @@ export function Home() {
   }: ChangeEvent<HTMLInputElement>) => {
     const { value } = currentTarget
     if (value.trim().length === 0) {
-      username.current = defaultUsername
+      username.current = defaultUsername.current
       return
     }
 
@@ -51,7 +51,7 @@ export function Home() {
     }
 
     if (roomID.current === '') roomID.current = RandomString(4)
-    if (username.current === '') username.current = defaultUsername
+    if (username.current === '') username.current = defaultUsername.current
 
     history.push(`room/${roomID.current}`, { username: username.current })
   }
@@ -81,7 +81,7 @@ export function Home() {
                   <InputWrapper>
                     <Input
                       type="text"
-                      placeholder={defaultUsername}
+                      placeholder={defaultUsername.current}
                       onChange={onChangeUsername}
                     />
                   </InputWrapper>

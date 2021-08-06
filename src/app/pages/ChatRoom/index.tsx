@@ -1,13 +1,101 @@
-import React from 'react'
+import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Helmet } from 'react-helmet-async'
 import { Redirect, useLocation, useParams } from 'react-router-dom'
+import firestore from 'utils/firebase'
 import { NavBar } from 'app/components/NavBar'
 import { PageWrapper } from 'app/components/PageWrapper'
+import { Message } from 'types/Message'
+import { uuid } from 'utils/generate'
 
 export function ChatRoom() {
   const { id } = useParams<{ id: string }>()
   const locationState = useLocation<{ username: string }>().state
+  const [messages, setMessages] = useState<Message[]>([])
+  const message = useRef('')
+  const messageBox = useRef<HTMLTextAreaElement | null>()
+  const chatBox = useRef<HTMLDivElement | null>()
+
+  useEffect(() => {
+    firestore
+      .collection('chats')
+      .doc(id)
+      .collection('messages')
+      .onSnapshot(doc => {
+        let listenedMessages: Message[] = doc.docChanges().map(each => {
+          const {
+            created_at,
+            username,
+            message,
+            id: messageID,
+          } = each.doc.data()
+          return {
+            id: messageID,
+            created_at,
+            username,
+            message,
+          }
+        })
+
+        setMessages(m => [...m, ...listenedMessages])
+      })
+  }, [id])
+
+  useEffect(() => {
+    chatBox.current?.scrollTo(0, chatBox.current.scrollHeight)
+  })
+
+  const onChangeMessage = ({
+    currentTarget,
+  }: ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = currentTarget
+
+    message.current = value
+  }
+
+  const onSend = () => {
+    if (message.current.trim() === '') {
+      alert('message cannot be empty')
+      return
+    }
+
+    const messageObject: Message = {
+      id: uuid(),
+      created_at: Math.floor(Date.now() / 1000),
+      message: message.current,
+      username: locationState.username,
+    }
+
+    firestore
+      .collection('chats')
+      .doc(id)
+      .collection('messages')
+      .add(messageObject)
+      .then(() => {
+        message.current = ''
+        messageBox.current && (messageBox.current.value = '')
+      })
+  }
+
+  const renderMessages = useMemo(
+    () =>
+      messages.map(message => (
+        <ChatWrapper key={message.id}>
+          <Chat>
+            <Username>{message.username} :</Username>
+            <MessageWrapper>{message.message}</MessageWrapper>
+          </Chat>
+          <MessageTime>
+            {new Date(message.created_at * 1000).toLocaleDateString('id-ID', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </MessageTime>
+        </ChatWrapper>
+      )),
+    [messages],
+  )
 
   return !(locationState === undefined || locationState.username === '') ? (
     <>
@@ -19,141 +107,13 @@ export function ChatRoom() {
       <NavBar />
       <PageWrapper>
         <StyledWrapper>
-          <ChatBox>
-            <ChatWrapper>
-              <Chat>
-                <Username>heggies :</Username>
-                <Message>
-                  Odio fugit accusantium cum hic pariatur iste. Ut possimus
-                  voluptates omnis. Et vero soluta illum. Ullam rerum iure odit
-                  numquam dolores. Veniam sit nam est quia consequuntur est
-                  blanditiis. Aperiam nisi ut iste eveniet et quis sit. Rerum
-                  voluptatem ex exercitationem provident. Reiciendis fugit fugit
-                  rerum dolorem et amet ad. Doloribus consectetur ea labore
-                  nulla dolorum error dolor quod. Est quia eligendi nemo nemo.
-                  Voluptas unde quia molestiae. Ex nostrum et nemo impedit
-                  doloremque non ad. Sint similique vero quidem quo cumque
-                  corporis. Et consequatur voluptatem beatae rerum. Error
-                  aliquam doloremque accusantium fugiat deserunt reprehenderit
-                  excepturi. Aut accusamus deleniti et reiciendis. Voluptatem
-                  iusto ut in facere dolorem labore. Ullam voluptatem aut quia a
-                  dolor molestiae. Quaerat qui id nostrum ipsum fugiat. Non
-                  voluptas dolorum ex optio non facere dolor omnis. Voluptas
-                  laborum maxime voluptatem excepturi esse eveniet. Ullam ipsa
-                  aut dolorem deleniti quas voluptatem consequatur. Vel sint aut
-                  aspernatur maiores aut ut.
-                </Message>
-              </Chat>
-              <MessageTime>7/12/11, 6:08 AM</MessageTime>
-            </ChatWrapper>
-            <ChatWrapper>
-              <Chat>
-                <Username>heggies :</Username>
-                <Message>
-                  Odio fugit accusantium cum hic pariatur iste. Ut possimus
-                  voluptates omnis. Et vero soluta illum. Ullam rerum iure odit
-                  numquam dolores. Veniam sit nam est quia consequuntur est
-                  blanditiis. Aperiam nisi ut iste eveniet et quis sit. Rerum
-                  voluptatem ex exercitationem provident. Reiciendis fugit fugit
-                  rerum dolorem et amet ad. Doloribus consectetur ea labore
-                  nulla dolorum error dolor quod. Est quia eligendi nemo nemo.
-                  Voluptas unde quia molestiae. Ex nostrum et nemo impedit
-                  doloremque non ad. Sint similique vero quidem quo cumque
-                  corporis. Et consequatur voluptatem beatae rerum. Error
-                  aliquam doloremque accusantium fugiat deserunt reprehenderit
-                  excepturi. Aut accusamus deleniti et reiciendis. Voluptatem
-                  iusto ut in facere dolorem labore. Ullam voluptatem aut quia a
-                  dolor molestiae. Quaerat qui id nostrum ipsum fugiat. Non
-                  voluptas dolorum ex optio non facere dolor omnis. Voluptas
-                  laborum maxime voluptatem excepturi esse eveniet. Ullam ipsa
-                  aut dolorem deleniti quas voluptatem consequatur. Vel sint aut
-                  aspernatur maiores aut ut.
-                </Message>
-              </Chat>
-              <MessageTime>7/12/11, 6:08 AM</MessageTime>
-            </ChatWrapper>
-            <ChatWrapper>
-              <Chat>
-                <Username>heggies :</Username>
-                <Message>
-                  Odio fugit accusantium cum hic pariatur iste. Ut possimus
-                  voluptates omnis. Et vero soluta illum. Ullam rerum iure odit
-                  numquam dolores. Veniam sit nam est quia consequuntur est
-                  blanditiis. Aperiam nisi ut iste eveniet et quis sit. Rerum
-                  voluptatem ex exercitationem provident. Reiciendis fugit fugit
-                  rerum dolorem et amet ad. Doloribus consectetur ea labore
-                  nulla dolorum error dolor quod. Est quia eligendi nemo nemo.
-                  Voluptas unde quia molestiae. Ex nostrum et nemo impedit
-                  doloremque non ad. Sint similique vero quidem quo cumque
-                  corporis. Et consequatur voluptatem beatae rerum. Error
-                  aliquam doloremque accusantium fugiat deserunt reprehenderit
-                  excepturi. Aut accusamus deleniti et reiciendis. Voluptatem
-                  iusto ut in facere dolorem labore. Ullam voluptatem aut quia a
-                  dolor molestiae. Quaerat qui id nostrum ipsum fugiat. Non
-                  voluptas dolorum ex optio non facere dolor omnis. Voluptas
-                  laborum maxime voluptatem excepturi esse eveniet. Ullam ipsa
-                  aut dolorem deleniti quas voluptatem consequatur. Vel sint aut
-                  aspernatur maiores aut ut.
-                </Message>
-              </Chat>
-              <MessageTime>7/12/11, 6:08 AM</MessageTime>
-            </ChatWrapper>
-            <ChatWrapper>
-              <Chat>
-                <Username>heggies :</Username>
-                <Message>
-                  Odio fugit accusantium cum hic pariatur iste. Ut possimus
-                  voluptates omnis. Et vero soluta illum. Ullam rerum iure odit
-                  numquam dolores. Veniam sit nam est quia consequuntur est
-                  blanditiis. Aperiam nisi ut iste eveniet et quis sit. Rerum
-                  voluptatem ex exercitationem provident. Reiciendis fugit fugit
-                  rerum dolorem et amet ad. Doloribus consectetur ea labore
-                  nulla dolorum error dolor quod. Est quia eligendi nemo nemo.
-                  Voluptas unde quia molestiae. Ex nostrum et nemo impedit
-                  doloremque non ad. Sint similique vero quidem quo cumque
-                  corporis. Et consequatur voluptatem beatae rerum. Error
-                  aliquam doloremque accusantium fugiat deserunt reprehenderit
-                  excepturi. Aut accusamus deleniti et reiciendis. Voluptatem
-                  iusto ut in facere dolorem labore. Ullam voluptatem aut quia a
-                  dolor molestiae. Quaerat qui id nostrum ipsum fugiat. Non
-                  voluptas dolorum ex optio non facere dolor omnis. Voluptas
-                  laborum maxime voluptatem excepturi esse eveniet. Ullam ipsa
-                  aut dolorem deleniti quas voluptatem consequatur. Vel sint aut
-                  aspernatur maiores aut ut.
-                </Message>
-              </Chat>
-              <MessageTime>7/12/11, 6:08 AM</MessageTime>
-            </ChatWrapper>
-            <ChatWrapper>
-              <Chat>
-                <Username>heggies :</Username>
-                <Message>
-                  Odio fugit accusantium cum hic pariatur iste. Ut possimus
-                  voluptates omnis. Et vero soluta illum. Ullam rerum iure odit
-                  numquam dolores. Veniam sit nam est quia consequuntur est
-                  blanditiis. Aperiam nisi ut iste eveniet et quis sit. Rerum
-                  voluptatem ex exercitationem provident. Reiciendis fugit fugit
-                  rerum dolorem et amet ad. Doloribus consectetur ea labore
-                  nulla dolorum error dolor quod. Est quia eligendi nemo nemo.
-                  Voluptas unde quia molestiae. Ex nostrum et nemo impedit
-                  doloremque non ad. Sint similique vero quidem quo cumque
-                  corporis. Et consequatur voluptatem beatae rerum. Error
-                  aliquam doloremque accusantium fugiat deserunt reprehenderit
-                  excepturi. Aut accusamus deleniti et reiciendis. Voluptatem
-                  iusto ut in facere dolorem labore. Ullam voluptatem aut quia a
-                  dolor molestiae. Quaerat qui id nostrum ipsum fugiat. Non
-                  voluptas dolorum ex optio non facere dolor omnis. Voluptas
-                  laborum maxime voluptatem excepturi esse eveniet. Ullam ipsa
-                  aut dolorem deleniti quas voluptatem consequatur. Vel sint aut
-                  aspernatur maiores aut ut.
-                </Message>
-              </Chat>
-              <MessageTime>7/12/11, 6:08 AM</MessageTime>
-            </ChatWrapper>
-          </ChatBox>
+          <ChatBox ref={e => (chatBox.current = e)}>{renderMessages}</ChatBox>
           <MessageBox>
-            <MessageTextArea />
-            <MessageSendButton>SEND</MessageSendButton>
+            <MessageTextArea
+              onChange={onChangeMessage}
+              ref={e => (messageBox.current = e)}
+            />
+            <MessageSendButton onClick={onSend}>SEND</MessageSendButton>
           </MessageBox>
         </StyledWrapper>
       </PageWrapper>
@@ -237,7 +197,7 @@ const Username = styled.span`
   margin-bottom: 0.2em;
 `
 
-const Message = styled.span`
+const MessageWrapper = styled.span`
   background-color: #5e5555;
   color: ${p => p.theme.text};
   padding: 10px;
