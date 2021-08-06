@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Helmet } from 'react-helmet-async';
-import { NavBar } from 'app/components/NavBar';
-import { Masthead } from './Masthead';
-import { Features } from './Features';
-import { PageWrapper } from 'app/components/PageWrapper';
+import * as React from 'react'
+import { Helmet } from 'react-helmet-async'
+import { NavBar } from 'app/components/NavBar'
+import { Masthead } from './Masthead'
+import { Features } from './Features'
+import { PageWrapper } from 'app/components/PageWrapper'
 
 export function HomePage() {
   return (
@@ -21,5 +21,5 @@ export function HomePage() {
         <Features />
       </PageWrapper>
     </>
-  );
+  )
 }
