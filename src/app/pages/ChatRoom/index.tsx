@@ -199,7 +199,7 @@ const Username = styled.span`
 
 const MessageWrapper = styled.span`
   background-color: #5e5555;
-  color: ${p => p.theme.text};
+  color: white;
   padding: 10px;
   border-radius: 10px;
 `
